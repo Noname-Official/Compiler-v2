@@ -1,0 +1,5 @@
+Invalid float literal '1.2.3'
+Invalid float literal '.2.3'
+Invalid float literal '1.2.'
+Invalid float literal '.2.'
+Invalid float literal '1.1.1.1'
