@@ -1,5 +1,5 @@
 [workspace]
-members = ["ast", "lexer", "parser", "parser/derive"]
+members = ["ast", "interpreter", "lexer", "parser", "parser/derive"]
 
 [package]
 name = "compiler_v2"

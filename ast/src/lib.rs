@@ -67,4 +67,4 @@ pub struct Term {
     pub rest: Vec<(MulDiv, Factor)>,
 }
 
-type Factor = Literal;
+pub type Factor = Literal;
