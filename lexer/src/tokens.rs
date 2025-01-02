@@ -6,7 +6,7 @@ pub enum Token {
 
 #[derive(Debug, PartialEq)]
 pub enum Literal {
-    Int(usize),
+    Int(isize),
     Float(f64),
 }
 
