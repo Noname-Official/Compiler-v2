@@ -16,14 +16,14 @@ pub fn derive_parse(input: TokenStream) -> TokenStream {
     // TODO: Unit structs
     let first_field_ty = &fields.iter().next().unwrap().ty;
     quote!(
-        impl crate::parser::Parse for #name {
-            type Token = <#first_field_ty as crate::parser::Parse>::Token;
+        impl ::parser::Parse for #name {
+            type Token = <#first_field_ty as ::parser::Parse>::Token;
 
             fn parse<Lexer: ::std::iter::Iterator<Item = Token>>(
                 lexer: &mut ::std::iter::Peekable<Lexer>,
             ) -> Option<Self> {
                 Some(Self {
-                    #(#field_names: crate::parser::Parse::parse(lexer)?,)*
+                    #(#field_names: ::parser::Parse::parse(lexer)?,)*
                 })
             }
 

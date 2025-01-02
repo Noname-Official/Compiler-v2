@@ -1,7 +1,8 @@
 use std::{env, fs, process::exit};
 
+use ast::Expression;
 use lexer::lexer::Lexer;
-use parser::{ast::Expression, parser::Parse};
+use parser::Parse;
 
 fn main() {
     let path = match env::args().nth(1) {
