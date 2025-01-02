@@ -1,0 +1,11 @@
+[package]
+name = "parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lexer = { path = "../lexer", optional = true }
+derive = { path = "derive" }
+
+[features]
+ast = ["lexer"]

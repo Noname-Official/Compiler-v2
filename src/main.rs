@@ -1,6 +1,7 @@
 use std::{env, fs, process::exit};
 
 use lexer::lexer::Lexer;
+use parser::{ast::Expression, parser::Parse};
 
 fn main() {
     let path = match env::args().nth(1) {
@@ -21,10 +22,15 @@ fn main() {
         }
     };
     let mut lexer = Lexer::from_readable(file);
-    for token in &mut lexer {
-        println!("{token:#?}");
-    }
+    let mut peekable = lexer.by_ref().peekable();
+    let expr = Expression::parse(&mut peekable);
+    peekable.for_each(|_| {});
     if lexer.error {
         exit(-1);
     }
+    let Some(ast) = expr else {
+        eprintln!("Error parsing");
+        exit(-1);
+    };
+    println!("{:#?}", ast);
 }

@@ -1,5 +1,5 @@
 [workspace]
-members = ["lexer"]
+members = ["lexer", "parser", "parser/derive"]
 
 [package]
 name = "compiler_v2"
@@ -8,3 +8,4 @@ edition = "2021"
 
 [dependencies]
 lexer = { path = "lexer" }
+parser = { path = "parser", features = ["ast"] }
