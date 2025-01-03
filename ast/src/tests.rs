@@ -3,7 +3,7 @@ use lexer::lexer::Lexer;
 use crate::*;
 
 #[test]
-fn test_ast() {
+fn test_expr() {
     assert_eq!(
         Some(Expression {
             first: Term {
@@ -38,5 +38,41 @@ fn test_ast() {
             ],
         }),
         Expression::parse(&mut Lexer::from_string("1/2*3+4*5+6-7").peekable()),
+    );
+}
+
+#[test]
+fn test_ast() {
+    assert_eq!(
+        Some(Ast {
+            stmts: vec![
+                Statement::Let(LetStmt {
+                    let_kw: Let(tokens::Let),
+                    ident: Ident(tokens::Ident {
+                        ident: String::from("abc"),
+                    }),
+                    eq: Eq(tokens::Eq),
+                    expr: Expression {
+                        first: Term {
+                            first: Literal(tokens::Literal::Int(1)),
+                            rest: vec![],
+                        },
+                        rest: vec![],
+                    },
+                    semi: SemiColon(tokens::SemiColon),
+                }),
+                Statement::Expr(ExprStmt {
+                    expr: Expression {
+                        first: Term {
+                            first: Literal(tokens::Literal::Int(2)),
+                            rest: vec![],
+                        },
+                        rest: vec![],
+                    },
+                    semi: SemiColon(tokens::SemiColon),
+                }),
+            ],
+        }),
+        Ast::parse(&mut Lexer::from_string("let abc = 1; 2;").peekable()),
     );
 }

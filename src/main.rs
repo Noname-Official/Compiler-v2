@@ -1,6 +1,6 @@
 use std::{env, fs, path::Path, process::exit};
 
-use ast::Expression;
+use ast::Ast;
 use compiler::{compile, Language};
 use lexer::lexer::Lexer;
 use parser::Parse;
@@ -33,12 +33,12 @@ fn main() {
     };
     let mut lexer = Lexer::from_readable(file);
     let mut peekable = lexer.by_ref().peekable();
-    let expr = Expression::parse(&mut peekable);
+    let ast = Ast::parse(&mut peekable);
     peekable.for_each(|_| {});
     if lexer.error {
         exit(-1);
     }
-    let Some(ast) = expr else {
+    let Some(ast) = ast else {
         eprintln!("Error parsing");
         exit(-1);
     };

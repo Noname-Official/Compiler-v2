@@ -1,10 +1,27 @@
-use ast::{Expression, Factor, Term};
+use ast::{Ast, Expression, Factor, LetStmt, Statement, Term};
 use lexer::tokens::Literal;
 
 #[cfg(test)]
 mod tests;
 
-pub fn interpret(expr: &Expression) -> f64 {
+pub fn interpret(ast: &Ast) {
+    for stmt in &ast.stmts {
+        interpret_stmt(stmt);
+    }
+}
+
+fn interpret_stmt(stmt: &Statement) {
+    match stmt {
+        Statement::Let(let_stmt) => interpret_let(let_stmt),
+        Statement::Expr(expr_stmt) => println!("{}", interpret_expr(&expr_stmt.expr)),
+    }
+}
+
+fn interpret_let(_stmt: &LetStmt) {
+    todo!()
+}
+
+fn interpret_expr(expr: &Expression) -> f64 {
     expr.rest
         .iter()
         .fold(interpret_term(&expr.first), |acc, (op, term)| match op {
