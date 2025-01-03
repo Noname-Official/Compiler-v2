@@ -58,8 +58,25 @@ fn test_lexer_punctuation() {
             Token::Punct(Punct::Minus(Minus)),
             Token::Punct(Punct::Star(Star)),
             Token::Punct(Punct::Slash(Slash)),
+            Token::Punct(Punct::Eq(Eq)),
+            Token::Punct(Punct::SemiColon(SemiColon)),
         ],
-        Lexer::from_string("+-*/").collect::<Vec<_>>(),
+        Lexer::from_string("+-*/=;").collect::<Vec<_>>(),
+    )
+}
+
+#[test]
+fn test_lexer_ident() {
+    assert_eq!(
+        vec![
+            Token::Ident(Ident {
+                ident: String::from("abcd")
+            }),
+            Token::Ident(Ident {
+                ident: String::from("efgh")
+            }),
+        ],
+        Lexer::from_string("abcd efgh").collect::<Vec<_>>(),
     )
 }
 

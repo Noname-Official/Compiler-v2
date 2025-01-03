@@ -1,6 +1,8 @@
-use std::{io::Read, iter::Peekable, str::Chars};
+use std::{collections::HashMap, io::Read, iter::Peekable, str::Chars};
 
-use crate::tokens::{Literal, Minus, Plus, Punct, Slash, Star, Token};
+use crate::tokens::{
+    Eq, Ident, Keyword, Let, Literal, Minus, Plus, Punct, SemiColon, Slash, Star, Token,
+};
 
 pub struct Lexer<T: Iterator<Item = char>> {
     source: Peekable<T>,
@@ -82,6 +84,24 @@ impl<T: Iterator<Item = char>> Iterator for Lexer<T> {
                 '-' => Some(Token::Punct(Punct::Minus(Minus))),
                 '*' => Some(Token::Punct(Punct::Star(Star))),
                 '/' => Some(Token::Punct(Punct::Slash(Slash))),
+                ';' => Some(Token::Punct(Punct::SemiColon(SemiColon))),
+                '=' => Some(Token::Punct(Punct::Eq(Eq))),
+                'a'..='z' => {
+                    let key_words = {
+                        let mut test = HashMap::new();
+                        test.insert("let", Keyword::Let(Let));
+                        test
+                    };
+
+                    let mut ident = c.to_string();
+                    while let Some(c) = self.source.next_if(char::is_ascii_lowercase) {
+                        ident.push(c);
+                    }
+                    Some(match key_words.get(ident.as_str()) {
+                        Some(kw) => Token::Keyword(*kw),
+                        None => Token::Ident(Ident { ident }),
+                    })
+                }
                 '0'..='9' | '.' => {
                     let mut value = c.to_string();
                     let mut float = c == '.';
