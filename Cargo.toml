@@ -1,5 +1,5 @@
 [workspace]
-members = ["ast", "interpreter", "lexer", "parser", "parser/derive"]
+members = ["ast", "compiler", "interpreter", "lexer", "parser", "parser/derive"]
 
 [package]
 name = "compiler_v2"
@@ -10,3 +10,4 @@ edition = "2021"
 lexer = { path = "lexer", features = ["lexer"] }
 parser = { path = "parser" }
 ast = { path = "ast", features = ["parser"] }
+compiler = { path = "compiler" }
