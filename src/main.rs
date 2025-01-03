@@ -1,19 +1,28 @@
-use std::{env, fs, process::exit};
+use std::{env, fs, path::Path, process::exit};
 
 use ast::Expression;
+use compiler::{compile, Language};
 use lexer::lexer::Lexer;
 use parser::Parse;
 
 fn main() {
-    let path = match env::args().nth(1) {
+    let mut args = env::args().skip(1);
+    let path = match args.next() {
         Some(path) => path,
         None => {
             eprintln!(
-                "usage: {} path",
+                "usage: {} path [output_path]",
                 env::args().next().unwrap_or("compiler".into())
             );
             return;
         }
+    };
+    let output_path = match args.next() {
+        Some(path) => path,
+        None => Path::new(&path)
+            .with_extension("py")
+            .to_string_lossy()
+            .into_owned(),
     };
     let file = match fs::OpenOptions::new().read(true).open(&path) {
         Ok(file) => file,
@@ -33,5 +42,6 @@ fn main() {
         eprintln!("Error parsing");
         exit(-1);
     };
-    println!("{:#?}", ast);
+    let asm = compile(&ast, Language::Python);
+    fs::write(output_path, asm).unwrap();
 }
