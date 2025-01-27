@@ -25,6 +25,7 @@ impl<R: Read> Lexer<ReadIter<R>> {
 }
 
 impl<'a> Lexer<Chars<'a>> {
+    #[must_use]
     pub fn from_string(string: &'a str) -> Self {
         Self::from_char_iter(string.chars())
     }
@@ -38,7 +39,7 @@ pub struct ReadIter<T: Read> {
 }
 
 impl<T: Read> ReadIter<T> {
-    fn new(inner: T) -> Self {
+    const fn new(inner: T) -> Self {
         Self {
             inner,
             buf: [0; 1024],
@@ -75,11 +76,11 @@ impl<T: Iterator<Item = char>> Iterator for Lexer<T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            let mut c = ' ';
-            while c.is_whitespace() {
-                c = self.source.next()?
+            let mut char = ' ';
+            while char.is_whitespace() {
+                char = self.source.next()?;
             }
-            return match c {
+            return match char {
                 '+' => Some(Token::Punct(Punct::Plus(Plus))),
                 '-' => Some(Token::Punct(Punct::Minus(Minus))),
                 '*' => Some(Token::Punct(Punct::Star(Star))),
@@ -93,20 +94,21 @@ impl<T: Iterator<Item = char>> Iterator for Lexer<T> {
                         test
                     };
 
-                    let mut ident = c.to_string();
-                    while let Some(c) = self.source.next_if(char::is_ascii_lowercase) {
-                        ident.push(c);
+                    let mut ident = char.to_string();
+                    while let Some(character) = self.source.next_if(char::is_ascii_lowercase) {
+                        ident.push(character);
                     }
-                    Some(match key_words.get(ident.as_str()) {
-                        Some(kw) => Token::Keyword(*kw),
-                        None => Token::Ident(Ident { ident }),
-                    })
+                    Some(
+                        key_words
+                            .get(ident.as_str())
+                            .map_or(Token::Ident(Ident { ident }), |kw| Token::Keyword(*kw)),
+                    )
                 }
                 '0'..='9' | '.' => {
-                    let mut value = c.to_string();
-                    let mut float = c == '.';
+                    let mut value = char.to_string();
+                    let mut float = char == '.';
                     let mut valid = true;
-                    while let Some(c @ '0'..='9' | c @ '.') = self.source.peek() {
+                    while let Some(c @ ('0'..='9' | '.')) = self.source.peek() {
                         let c = *c;
                         self.source.next();
                         if c == '.' && float {
@@ -128,7 +130,7 @@ impl<T: Iterator<Item = char>> Iterator for Lexer<T> {
                     }))
                 }
                 _ => {
-                    eprintln!("Unrecognized token: '{c}'");
+                    eprintln!("Unrecognized token: '{char}'");
                     self.error = true;
                     continue;
                 }

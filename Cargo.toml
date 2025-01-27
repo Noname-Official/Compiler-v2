@@ -10,4 +10,6 @@ edition = "2021"
 lexer = { path = "lexer", features = ["lexer"] }
 parser = { path = "parser" }
 ast = { path = "ast", features = ["parser"] }
-compiler = { path = "compiler" }
+compiler = { path = "compiler", features = ["clap"] }
+interpreter = { path = "interpreter" }
+clap = { version = "4.5.27", features = ["derive"] }

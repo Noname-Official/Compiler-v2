@@ -1,33 +1,53 @@
-use std::{env, fs, path::Path, process::exit};
+use std::{fs, path::Path, process::exit};
+
+#[cfg(test)]
+mod tests;
 
 use ast::Ast;
+use clap::{Parser, Subcommand};
 use compiler::{compile, Language};
+use interpreter::interpret;
 use lexer::lexer::Lexer;
 use parser::Parse;
 
-fn main() {
-    let mut args = env::args().skip(1);
-    let path = match args.next() {
-        Some(path) => path,
-        None => {
-            eprintln!(
-                "usage: {} path [output_path]",
-                env::args().next().unwrap_or("compiler".into())
-            );
-            return;
+#[derive(Parser, Debug)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    Compile {
+        #[arg(short, long)]
+        language: Language,
+        input_file: String,
+        output_file: Option<String>,
+    },
+    Interpret {
+        input_file: String,
+    },
+}
+
+impl Commands {
+    fn input_file(&self) -> &str {
+        match self {
+            Commands::Compile { input_file, .. } | Commands::Interpret { input_file, .. } => {
+                input_file
+            }
         }
-    };
-    let output_path = match args.next() {
-        Some(path) => path,
-        None => Path::new(&path)
-            .with_extension("py")
-            .to_string_lossy()
-            .into_owned(),
-    };
-    let file = match fs::OpenOptions::new().read(true).open(&path) {
+    }
+}
+
+fn main() {
+    let args = Cli::parse();
+    let file = match fs::OpenOptions::new()
+        .read(true)
+        .open(args.command.input_file())
+    {
         Ok(file) => file,
         Err(e) => {
-            eprintln!("error opening file '{path}': {e}");
+            eprintln!("error opening file '{}': {e}", args.command.input_file());
             return;
         }
     };
@@ -42,6 +62,23 @@ fn main() {
         eprintln!("Error parsing");
         exit(-1);
     };
-    let asm = compile(&ast, Language::Python);
-    fs::write(output_path, asm).unwrap();
+    match args.command {
+        Commands::Compile {
+            language,
+            input_file,
+            output_file,
+        } => {
+            let asm = compile(&ast, language);
+            let output_path = output_file.unwrap_or_else(|| {
+                Path::new(&input_file)
+                    .with_extension(language.get_extension())
+                    .to_string_lossy()
+                    .into_owned()
+            });
+            fs::write(output_path, asm).unwrap();
+        }
+        Commands::Interpret { input_file: _ } => {
+            interpret(&ast);
+        }
+    }
 }

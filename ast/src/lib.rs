@@ -43,21 +43,21 @@ macro_rules! token_ast {
 }
 
 token_ast! {Token,
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub struct Let = tokens::Let { kw: Token::Keyword(Keyword::Let(kw)) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub struct SemiColon = tokens::SemiColon { semi_colon: Token::Punct(tokens::Punct::SemiColon(semi_colon)) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub struct Ident = tokens::Ident { ident: Token::Ident(ident) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub struct Eq = tokens::Eq { eq: Token::Punct(tokens::Punct::Eq(eq)) }
     #[derive(Debug, PartialEq)]
     pub struct Literal = tokens::Literal { lit: Token::Literal(lit) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub struct Punct = tokens::Punct { punct: Token::Punct(punct) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub enum PlusMinus { Plus(): Token::Punct(tokens::Punct::Plus(_)), Minus(): Token::Punct(tokens::Punct::Minus(_)) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub enum MulDiv { Mul(): Token::Punct(tokens::Punct::Star(_)), Div(): Token::Punct(tokens::Punct::Slash(_)) }
 }
 
@@ -105,4 +105,9 @@ pub struct Term {
     pub rest: Vec<(MulDiv, Factor)>,
 }
 
-pub type Factor = Literal;
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub enum Factor {
+    Literal(Literal),
+    Ident(Ident),
+}

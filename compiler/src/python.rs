@@ -1,5 +1,7 @@
-use ast::{Ast, ExprStmt, Expression, Factor, LetStmt, MulDiv, PlusMinus, Statement, Term};
-use lexer::tokens::Literal;
+use ast::{
+    Ast, ExprStmt, Expression, Factor, LetStmt, Literal, MulDiv, PlusMinus, Statement, Term,
+};
+use lexer::tokens;
 
 pub fn compile_python(ast: &Ast) -> String {
     let mut out = String::new();
@@ -47,44 +49,9 @@ fn compile_term(term: &Term) -> String {
 }
 
 fn compile_factor(factor: &Factor) -> String {
-    match factor.0 {
-        Literal::Int(int) => int.to_string(),
-        Literal::Float(float) => float.to_string(),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::{ffi::OsStr, process::Command};
-
-    use lexer::lexer::Lexer;
-    use parser::Parse;
-
-    use super::*;
-
-    #[test]
-    fn test_python_compiler() {
-        let ast =
-            Ast::parse(&mut Lexer::from_string("let a = 1; 1/2*3+4*5+6-7;").peekable()).unwrap();
-        println!("{:#?}", ast);
-        let python_code = compile_python(&ast);
-        println!("'{}'", python_code);
-        let expected_stdout = (1f64 / 2f64 * 3f64 + 4f64 * 5f64 + 6f64 - 7f64).to_string();
-        let mut command = Command::new("python");
-        command.arg("-c").arg(python_code);
-        println!(
-            "{:?}",
-            command.get_args().collect::<Vec<_>>().join(OsStr::new(" "))
-        );
-        let output = command.output().unwrap();
-        if !output.status.success() {
-            panic!("Python failed");
-        }
-        println!("'{}'", String::from_utf8_lossy(&output.stderr));
-        let expected_stdout = expected_stdout.trim().replace("\r\n", "\n");
-        let output = String::from_utf8_lossy(&output.stdout)
-            .trim()
-            .replace("\r\n", "\n");
-        assert_eq!(expected_stdout, output);
+    match factor {
+        Factor::Ident(ident) => ident.ident.clone(),
+        Factor::Literal(Literal(tokens::Literal::Int(int))) => int.to_string(),
+        Factor::Literal(Literal(tokens::Literal::Float(float))) => float.to_string(),
     }
 }
