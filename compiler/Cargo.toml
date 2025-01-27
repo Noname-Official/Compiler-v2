@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 ast = { path = "../ast" }
 lexer = { path = "../lexer" }
+clap = { version = "4.5.27", optional = true }
 
 [dev-dependencies]
 parser = { path = "../parser" }

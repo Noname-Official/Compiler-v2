@@ -4,7 +4,7 @@ mod tests;
 #[cfg(feature = "derive")]
 pub use derive::Parse;
 
-use std::iter::Peekable;
+use core::iter::Peekable;
 
 pub trait Parse: Sized {
     type Token;

@@ -10,7 +10,7 @@ fn test_parser() {
         fn parse<Lexer: Iterator<Item = Self::Token>>(
             lexer: &mut std::iter::Peekable<Lexer>,
         ) -> Option<Self> {
-            Some(Foo(lexer.next()?))
+            Some(Self(lexer.next()?))
         }
 
         fn maybe<Lexer: Iterator<Item = Self::Token>>(

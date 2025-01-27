@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests;
 
-use lexer::tokens;
 #[cfg(feature = "parser")]
 use lexer::tokens::Token;
+use lexer::tokens::{self, Keyword};
 #[cfg(feature = "parser")]
 use parser::{token_ast, Parse};
 
@@ -43,14 +43,52 @@ macro_rules! token_ast {
 }
 
 token_ast! {Token,
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct Let = tokens::Let { kw: Token::Keyword(Keyword::Let(kw)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct SemiColon = tokens::SemiColon { semi_colon: Token::Punct(tokens::Punct::SemiColon(semi_colon)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct Ident = tokens::Ident { ident: Token::Ident(ident) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct Eq = tokens::Eq { eq: Token::Punct(tokens::Punct::Eq(eq)) }
     #[derive(Debug, PartialEq)]
     pub struct Literal = tokens::Literal { lit: Token::Literal(lit) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub struct Punct = tokens::Punct { punct: Token::Punct(punct) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub enum PlusMinus { Plus(): Token::Punct(tokens::Punct::Plus(_)), Minus(): Token::Punct(tokens::Punct::Minus(_)) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub enum MulDiv { Mul(): Token::Punct(tokens::Punct::Star(_)), Div(): Token::Punct(tokens::Punct::Slash(_)) }
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub struct Ast {
+    pub stmts: Vec<Statement>,
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub enum Statement {
+    Let(LetStmt),
+    Expr(ExprStmt),
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub struct LetStmt {
+    pub let_kw: Let,
+    pub ident: Ident,
+    pub eq: Eq,
+    pub expr: Expression,
+    pub semi: SemiColon,
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub struct ExprStmt {
+    pub expr: Expression,
+    pub semi: SemiColon,
 }
 
 #[derive(Debug, PartialEq)]
@@ -67,4 +105,9 @@ pub struct Term {
     pub rest: Vec<(MulDiv, Factor)>,
 }
 
-pub type Factor = Literal;
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub enum Factor {
+    Literal(Literal),
+    Ident(Ident),
+}
