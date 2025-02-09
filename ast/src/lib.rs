@@ -46,6 +46,20 @@ token_ast! {Token,
     #[derive(Debug, PartialEq, Eq)]
     pub struct Let = tokens::Let { kw: Token::Keyword(Keyword::Let(kw)) }
     #[derive(Debug, PartialEq, Eq)]
+    pub struct If = tokens::If { kw: Token::Keyword(Keyword::If(kw)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct While = tokens::While { kw: Token::Keyword(Keyword::While(kw)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct For = tokens::For { kw: Token::Keyword(Keyword::For(kw)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct LBrace = tokens::LBrace { lbrace: Token::Punct(tokens::Punct::LBrace(lbrace)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct RBrace = tokens::RBrace { rbrace: Token::Punct(tokens::Punct::RBrace(rbrace)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct LParen = tokens::LParen { lparen: Token::Punct(tokens::Punct::LParen(lparen)) }
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct RParen = tokens::RParen { rparen: Token::Punct(tokens::Punct::RParen(rparen)) }
+    #[derive(Debug, PartialEq, Eq)]
     pub struct SemiColon = tokens::SemiColon { semi_colon: Token::Punct(tokens::Punct::SemiColon(semi_colon)) }
     #[derive(Debug, PartialEq, Eq)]
     pub struct Ident = tokens::Ident { ident: Token::Ident(ident) }
@@ -72,6 +86,8 @@ pub struct Ast {
 pub enum Statement {
     Let(LetStmt),
     Expr(ExprStmt),
+    If(IfStmt),
+    While(WhileStmt),
 }
 
 #[derive(Debug, PartialEq)]
@@ -82,6 +98,26 @@ pub struct LetStmt {
     pub eq: Eq,
     pub expr: Expression,
     pub semi: SemiColon,
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub struct IfStmt {
+    pub if_kw: If,
+    pub expr: Expression,
+    pub l_brace: LBrace,
+    pub stmts: Vec<Statement>,
+    pub r_brace: RBrace,
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub struct WhileStmt {
+    pub while_kw: While,
+    pub expr: Expression,
+    pub l_brace: LBrace,
+    pub stmts: Vec<Statement>,
+    pub r_brace: RBrace,
 }
 
 #[derive(Debug, PartialEq)]

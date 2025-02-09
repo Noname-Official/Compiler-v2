@@ -1,7 +1,8 @@
 use std::{collections::HashMap, io::Read, iter::Peekable, str::Chars};
 
 use crate::tokens::{
-    Eq, Ident, Keyword, Let, Literal, Minus, Plus, Punct, SemiColon, Slash, Star, Token,
+    Eq, Ident, If, Keyword, LBrace, LParen, Let, Literal, Minus, Plus, Punct, RBrace, RParen,
+    SemiColon, Slash, Star, Token, While,
 };
 
 pub struct Lexer<T: Iterator<Item = char>> {
@@ -87,12 +88,15 @@ impl<T: Iterator<Item = char>> Iterator for Lexer<T> {
                 '/' => Some(Token::Punct(Punct::Slash(Slash))),
                 ';' => Some(Token::Punct(Punct::SemiColon(SemiColon))),
                 '=' => Some(Token::Punct(Punct::Eq(Eq))),
+                '(' => Some(Token::Punct(Punct::LParen(LParen))),
+                ')' => Some(Token::Punct(Punct::RParen(RParen))),
+                '{' => Some(Token::Punct(Punct::LBrace(LBrace))),
+                '}' => Some(Token::Punct(Punct::RBrace(RBrace))),
                 'a'..='z' => {
-                    let key_words = {
-                        let mut test = HashMap::new();
-                        test.insert("let", Keyword::Let(Let));
-                        test
-                    };
+                    let mut key_words = HashMap::new();
+                    key_words.insert("let", Keyword::Let(Let));
+                    key_words.insert("if", Keyword::If(If));
+                    key_words.insert("while", Keyword::While(While));
 
                     let mut ident = char.to_string();
                     while let Some(character) = self.source.next_if(char::is_ascii_lowercase) {
