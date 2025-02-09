@@ -1,29 +1,65 @@
 use ast::{
-    Ast, ExprStmt, Expression, Factor, LetStmt, Literal, MulDiv, PlusMinus, Statement, Term,
+    Ast, ExprStmt, Expression, Factor, IfStmt, LetStmt, Literal, MulDiv, PlusMinus, Statement,
+    Term, WhileStmt,
 };
 use lexer::tokens;
 
 pub fn compile_python(ast: &Ast) -> String {
     let mut out = String::new();
     for stmt in &ast.stmts {
-        out += &compile_stmt(stmt);
+        out += &compile_stmt(stmt, 0);
     }
     out
 }
 
-fn compile_stmt(stmt: &Statement) -> String {
+fn compile_stmt(stmt: &Statement, indent: usize) -> String {
     match stmt {
-        Statement::Let(let_stmt) => compile_let(let_stmt),
-        Statement::Expr(expr_stmt) => compile_expr_stmt(expr_stmt),
+        Statement::Let(let_stmt) => compile_let(let_stmt, indent),
+        Statement::Expr(expr_stmt) => compile_expr_stmt(expr_stmt, indent),
+        Statement::If(if_stmt) => compile_if(if_stmt, indent),
+        Statement::While(while_stmt) => compile_while(while_stmt, indent),
     }
 }
 
-fn compile_let(stmt: &LetStmt) -> String {
-    format!("{} = {}\n", stmt.ident.ident, compile_expr(&stmt.expr))
+fn compile_let(stmt: &LetStmt, indent: usize) -> String {
+    format!(
+        "{}{} = {}\n",
+        "\t".repeat(indent),
+        stmt.ident.ident,
+        compile_expr(&stmt.expr)
+    )
 }
 
-fn compile_expr_stmt(stmt: &ExprStmt) -> String {
-    format!("print({})\n", compile_expr(&stmt.expr))
+fn compile_if(stmt: &IfStmt, indent: usize) -> String {
+    format!(
+        "{}if {}:\n{}",
+        "\t".repeat(indent),
+        compile_expr(&stmt.expr),
+        stmt.stmts
+            .iter()
+            .map(|stmt| compile_stmt(stmt, indent + 1))
+            .collect::<String>()
+    )
+}
+
+fn compile_while(stmt: &WhileStmt, indent: usize) -> String {
+    format!(
+        "{}while {}:\n{}",
+        "\t".repeat(indent),
+        compile_expr(&stmt.expr),
+        stmt.stmts
+            .iter()
+            .map(|stmt| compile_stmt(stmt, indent + 1))
+            .collect::<String>()
+    )
+}
+
+fn compile_expr_stmt(stmt: &ExprStmt, indent: usize) -> String {
+    format!(
+        "{}print({})\n",
+        "\t".repeat(indent),
+        compile_expr(&stmt.expr)
+    )
 }
 
 fn compile_expr(expr: &Expression) -> String {

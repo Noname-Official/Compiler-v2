@@ -14,10 +14,19 @@ pub struct Ident {
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Keyword {
     Let(Let),
+    If(If),
+    While(While),
+    For(For),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Let;
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct If;
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct While;
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct For;
 
 #[derive(Debug, PartialEq)]
 pub enum Literal {
@@ -33,6 +42,10 @@ pub enum Punct {
     Slash(Slash),
     Eq(Eq),
     SemiColon(SemiColon),
+    LParen(LParen),
+    RParen(RParen),
+    LBrace(LBrace),
+    RBrace(RBrace),
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -47,3 +60,11 @@ pub struct Slash;
 pub struct Eq;
 #[derive(Debug, PartialEq, Eq)]
 pub struct SemiColon;
+#[derive(Debug, PartialEq, Eq)]
+pub struct LParen;
+#[derive(Debug, PartialEq, Eq)]
+pub struct RParen;
+#[derive(Debug, PartialEq, Eq)]
+pub struct LBrace;
+#[derive(Debug, PartialEq, Eq)]
+pub struct RBrace;
