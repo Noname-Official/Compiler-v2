@@ -43,47 +43,47 @@ macro_rules! token_ast {
 }
 
 token_ast! {Token,
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct Let = tokens::Let { kw: Token::Keyword(Keyword::Let(kw)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct If = tokens::If { kw: Token::Keyword(Keyword::If(kw)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct While = tokens::While { kw: Token::Keyword(Keyword::While(kw)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct For = tokens::For { kw: Token::Keyword(Keyword::For(kw)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct Fn = tokens::Fn { kw: Token::Keyword(Keyword::Fn(kw)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct LBrace = tokens::LBrace { lbrace: Token::Punct(tokens::Punct::LBrace(lbrace)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct RBrace = tokens::RBrace { rbrace: Token::Punct(tokens::Punct::RBrace(rbrace)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct LParen = tokens::LParen { lparen: Token::Punct(tokens::Punct::LParen(lparen)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct RParen = tokens::RParen { rparen: Token::Punct(tokens::Punct::RParen(rparen)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct SemiColon = tokens::SemiColon { semi_colon: Token::Punct(tokens::Punct::SemiColon(semi_colon)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone)]
     pub struct Ident = tokens::Ident { ident: Token::Ident(ident) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct Eq = tokens::Eq { eq: Token::Punct(tokens::Punct::Eq(eq)) }
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Clone, Copy)]
     pub struct Literal = tokens::Literal { lit: Token::Literal(lit) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub struct Punct = tokens::Punct { punct: Token::Punct(punct) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub enum PlusMinus { Plus(): Token::Punct(tokens::Punct::Plus(_)), Minus(): Token::Punct(tokens::Punct::Minus(_)) }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub enum MulDiv { Mul(): Token::Punct(tokens::Punct::Star(_)), Div(): Token::Punct(tokens::Punct::Slash(_)) }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct Ast {
     pub fns: Vec<FnDecl>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct FnDecl {
     pub fn_kw: Fn,
@@ -95,7 +95,7 @@ pub struct FnDecl {
     pub r_brace: RBrace,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub enum Statement {
     Let(LetStmt),
@@ -105,7 +105,7 @@ pub enum Statement {
     FnDecl(FnDecl),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct LetStmt {
     pub let_kw: Let,
@@ -115,7 +115,7 @@ pub struct LetStmt {
     pub semi: SemiColon,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct IfStmt {
     pub if_kw: If,
@@ -125,7 +125,7 @@ pub struct IfStmt {
     pub r_brace: RBrace,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct WhileStmt {
     pub while_kw: While,
@@ -135,28 +135,28 @@ pub struct WhileStmt {
     pub r_brace: RBrace,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct ExprStmt {
     pub expr: Expression,
     pub semi: SemiColon,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct Expression {
     pub first: Term,
     pub rest: Vec<(PlusMinus, Term)>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct Term {
     pub first: Factor,
     pub rest: Vec<(MulDiv, Factor)>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub enum Factor {
     Literal(Literal),
@@ -164,7 +164,7 @@ pub enum Factor {
     FnCall(FnCall),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct FnCall {
     pub name: Ident,
