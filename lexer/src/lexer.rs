@@ -1,7 +1,7 @@
 use std::{collections::HashMap, io::Read, iter::Peekable, str::Chars};
 
 use crate::tokens::{
-    Eq, Ident, If, Keyword, LBrace, LParen, Let, Literal, Minus, Plus, Punct, RBrace, RParen,
+    Eq, Fn, Ident, If, Keyword, LBrace, LParen, Let, Literal, Minus, Plus, Punct, RBrace, RParen,
     SemiColon, Slash, Star, Token, While,
 };
 
@@ -97,6 +97,7 @@ impl<T: Iterator<Item = char>> Iterator for Lexer<T> {
                     key_words.insert("let", Keyword::Let(Let));
                     key_words.insert("if", Keyword::If(If));
                     key_words.insert("while", Keyword::While(While));
+                    key_words.insert("fn", Keyword::Fn(Fn));
 
                     let mut ident = char.to_string();
                     while let Some(character) = self.source.next_if(char::is_ascii_lowercase) {

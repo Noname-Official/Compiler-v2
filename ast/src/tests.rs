@@ -54,34 +54,44 @@ fn test_expr() {
 fn test_ast() {
     assert_eq!(
         Some(Ast {
-            stmts: vec![
-                Statement::Let(LetStmt {
-                    let_kw: Let(tokens::Let),
-                    ident: Ident(tokens::Ident {
-                        ident: String::from("abc"),
+            fns: vec![FnDecl {
+                fn_kw: Fn(tokens::Fn),
+                name: Ident(tokens::Ident {
+                    ident: String::from("main")
+                }),
+                l_paren: LParen(tokens::LParen),
+                r_paren: RParen(tokens::RParen),
+                l_brace: LBrace(tokens::LBrace),
+                stmts: vec![
+                    Statement::Let(LetStmt {
+                        let_kw: Let(tokens::Let),
+                        ident: Ident(tokens::Ident {
+                            ident: String::from("abc"),
+                        }),
+                        eq: Eq(tokens::Eq),
+                        expr: Expression {
+                            first: Term {
+                                first: Factor::Literal(Literal(tokens::Literal::Int(1))),
+                                rest: vec![],
+                            },
+                            rest: vec![],
+                        },
+                        semi: SemiColon(tokens::SemiColon),
                     }),
-                    eq: Eq(tokens::Eq),
-                    expr: Expression {
-                        first: Term {
-                            first: Factor::Literal(Literal(tokens::Literal::Int(1))),
+                    Statement::Expr(ExprStmt {
+                        expr: Expression {
+                            first: Term {
+                                first: Factor::Literal(Literal(tokens::Literal::Int(2))),
+                                rest: vec![],
+                            },
                             rest: vec![],
                         },
-                        rest: vec![],
-                    },
-                    semi: SemiColon(tokens::SemiColon),
-                }),
-                Statement::Expr(ExprStmt {
-                    expr: Expression {
-                        first: Term {
-                            first: Factor::Literal(Literal(tokens::Literal::Int(2))),
-                            rest: vec![],
-                        },
-                        rest: vec![],
-                    },
-                    semi: SemiColon(tokens::SemiColon),
-                }),
-            ],
+                        semi: SemiColon(tokens::SemiColon),
+                    }),
+                ],
+                r_brace: RBrace(tokens::RBrace),
+            }],
         }),
-        Ast::parse(&mut Lexer::from_string("let abc = 1; 2;").peekable()),
+        Ast::parse(&mut Lexer::from_string("fn main() {let abc = 1; 2;}").peekable()),
     );
 }

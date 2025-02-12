@@ -52,6 +52,8 @@ token_ast! {Token,
     #[derive(Debug, PartialEq, Eq)]
     pub struct For = tokens::For { kw: Token::Keyword(Keyword::For(kw)) }
     #[derive(Debug, PartialEq, Eq)]
+    pub struct Fn = tokens::Fn { kw: Token::Keyword(Keyword::Fn(kw)) }
+    #[derive(Debug, PartialEq, Eq)]
     pub struct LBrace = tokens::LBrace { lbrace: Token::Punct(tokens::Punct::LBrace(lbrace)) }
     #[derive(Debug, PartialEq, Eq)]
     pub struct RBrace = tokens::RBrace { rbrace: Token::Punct(tokens::Punct::RBrace(rbrace)) }
@@ -78,7 +80,19 @@ token_ast! {Token,
 #[derive(Debug, PartialEq)]
 #[cfg_attr(feature = "parser", derive(Parse))]
 pub struct Ast {
+    pub fns: Vec<FnDecl>,
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub struct FnDecl {
+    pub fn_kw: Fn,
+    pub name: Ident,
+    pub l_paren: LParen,
+    pub r_paren: RParen,
+    pub l_brace: LBrace,
     pub stmts: Vec<Statement>,
+    pub r_brace: RBrace,
 }
 
 #[derive(Debug, PartialEq)]
@@ -88,6 +102,7 @@ pub enum Statement {
     Expr(ExprStmt),
     If(IfStmt),
     While(WhileStmt),
+    FnDecl(FnDecl),
 }
 
 #[derive(Debug, PartialEq)]
@@ -146,4 +161,13 @@ pub struct Term {
 pub enum Factor {
     Literal(Literal),
     Ident(Ident),
+    FnCall(FnCall),
+}
+
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "parser", derive(Parse))]
+pub struct FnCall {
+    pub name: Ident,
+    pub l_paren: LParen,
+    pub r_paren: RParen,
 }

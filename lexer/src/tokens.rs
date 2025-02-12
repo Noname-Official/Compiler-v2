@@ -17,6 +17,7 @@ pub enum Keyword {
     If(If),
     While(While),
     For(For),
+    Fn(Fn),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -27,6 +28,8 @@ pub struct If;
 pub struct While;
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct For;
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct Fn;
 
 #[derive(Debug, PartialEq)]
 pub enum Literal {
