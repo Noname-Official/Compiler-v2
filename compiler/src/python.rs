@@ -1,15 +1,28 @@
 use ast::{
-    Ast, ExprStmt, Expression, Factor, IfStmt, LetStmt, Literal, MulDiv, PlusMinus, Statement,
-    Term, WhileStmt,
+    Ast, ExprStmt, Expression, Factor, FnCall, FnDecl, IfStmt, LetStmt, Literal, MulDiv, PlusMinus,
+    Statement, Term, WhileStmt,
 };
 use lexer::tokens;
 
 pub fn compile_python(ast: &Ast) -> String {
     let mut out = String::new();
-    for stmt in &ast.stmts {
-        out += &compile_stmt(stmt, 0);
+    for fn_decl in &ast.fns {
+        out += &compile_fn_decl(fn_decl, 0);
     }
     out
+}
+
+fn compile_fn_decl(fn_decl: &FnDecl, indent: usize) -> String {
+    format!(
+        "{}def {}():\n{}",
+        "\t".repeat(indent),
+        fn_decl.name.ident,
+        fn_decl
+            .stmts
+            .iter()
+            .map(|stmt| compile_stmt(stmt, indent + 1))
+            .collect::<String>()
+    )
 }
 
 fn compile_stmt(stmt: &Statement, indent: usize) -> String {
@@ -18,6 +31,7 @@ fn compile_stmt(stmt: &Statement, indent: usize) -> String {
         Statement::Expr(expr_stmt) => compile_expr_stmt(expr_stmt, indent),
         Statement::If(if_stmt) => compile_if(if_stmt, indent),
         Statement::While(while_stmt) => compile_while(while_stmt, indent),
+        Statement::FnDecl(fn_decl) => compile_fn_decl(fn_decl, indent),
     }
 }
 
@@ -89,5 +103,10 @@ fn compile_factor(factor: &Factor) -> String {
         Factor::Ident(ident) => ident.ident.clone(),
         Factor::Literal(Literal(tokens::Literal::Int(int))) => int.to_string(),
         Factor::Literal(Literal(tokens::Literal::Float(float))) => float.to_string(),
+        Factor::FnCall(fn_call) => compile_fn_call(fn_call),
     }
+}
+
+fn compile_fn_call(fn_call: &FnCall) -> String {
+    format!("{}()", fn_call.name.ident)
 }
